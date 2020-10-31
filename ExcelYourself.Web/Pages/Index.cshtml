@@ -1,0 +1,32 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+
+    var megabyteSizeLimit = options.Value.FileSizeLimit / 1024 / 1024;
+
+}
+@inject Microsoft.Extensions.Options.IOptions<ExcelYourself.Web.Settings.FileSettings> options
+
+<div class="text-center">
+    <h1 class="display-4">Create your new favourite spreadsheet: You!</h1>
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/UBX2QQHlQ_I" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <p>
+        Huge props to Matt Parker of Stand-Up Maths for inspiring me to create this.<br />
+        Matt has his own version of this, along with a short summary of his video above (though seriously, watch the video!), on his own site at <a href="http://think-maths.co.uk/spreadsheet" target="_blank">http://think-maths.co.uk/spreadsheet</a>.
+    </p>
+
+    <form enctype="multipart/form-data" method="post">
+        <dl>
+            <dt>
+                <label asp-for="FileUpload.FormFile"></label>
+            </dt>
+            <dd>
+                <input asp-for="FileUpload.FormFile" accept="image/*" /><br />
+                <span class="small">@($"Max {megabyteSizeLimit:N1} MB")</span><br />
+                <span asp-validation-for="FileUpload.FormFile"></span>
+            </dd>
+        </dl>
+        <input asp-page-handler="Upload" class="btn btn-success" type="submit" value="Excel Me!" />
+    </form>
+</div>
