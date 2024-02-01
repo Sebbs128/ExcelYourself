@@ -1,10 +1,9 @@
 ﻿using ClosedXML.Excel;
-using DocumentFormat.OpenXml.Spreadsheet;
-using System;
+
+using SkiaSharp;
+
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace ExcelYourself.Core
 {
@@ -14,7 +13,7 @@ namespace ExcelYourself.Core
         {
         }
 
-        public XLWorkbook Convert(Bitmap bitmap)
+        public XLWorkbook Convert(SKBitmap bitmap)
         {
             var workbook = new XLWorkbook();
             var worksheet = workbook.Worksheets.Add("Sheet 1");
@@ -30,12 +29,12 @@ namespace ExcelYourself.Core
                     int rowGreen = y * 3 + 2;
                     int rowBlue = y * 3 + 3;
 
-                    worksheet.Cell($"{col}{rowRed}").Value = pixel.R;
-                    worksheet.Cell($"{col}{rowRed}").Style.Fill.BackgroundColor = XLColor.FromArgb(pixel.R, 0, 0);
-                    worksheet.Cell($"{col}{rowGreen}").Value = pixel.G;
-                    worksheet.Cell($"{col}{rowGreen}").Style.Fill.BackgroundColor = XLColor.FromArgb(0, pixel.G, 0);
-                    worksheet.Cell($"{col}{rowBlue}").Value = pixel.B;
-                    worksheet.Cell($"{col}{rowBlue}").Style.Fill.BackgroundColor = XLColor.FromArgb(0, 0, pixel.B);
+                    worksheet.Cell($"{col}{rowRed}").Value = pixel.Red;
+                    worksheet.Cell($"{col}{rowRed}").Style.Fill.BackgroundColor = XLColor.FromArgb(pixel.Red, 0, 0);
+                    worksheet.Cell($"{col}{rowGreen}").Value = pixel.Green;
+                    worksheet.Cell($"{col}{rowGreen}").Style.Fill.BackgroundColor = XLColor.FromArgb(0, pixel.Green, 0);
+                    worksheet.Cell($"{col}{rowBlue}").Value = pixel.Blue;
+                    worksheet.Cell($"{col}{rowBlue}").Style.Fill.BackgroundColor = XLColor.FromArgb(0, 0, pixel.Blue);
                 }
             }
 

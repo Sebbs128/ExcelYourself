@@ -1,20 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using ClosedXML.Extensions;
+﻿using ClosedXML.Extensions;
+
 using ExcelYourself.Core;
 using ExcelYourself.Web.Models;
 using ExcelYourself.Web.Settings;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+
+using SkiaSharp;
+
+using System;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
+using System.IO;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace ExcelYourself.Web.Pages
 {
@@ -69,7 +72,7 @@ namespace ExcelYourself.Web.Pages
                 using (var memoryStream = new MemoryStream())
                 {
                     await FileUpload.FormFile.CopyToAsync(memoryStream);
-                    var image = Bitmap.FromStream(memoryStream);
+                    using var image = SKBitmap.Decode(memoryStream);
 
                     using (var workbook = _converter.Convert(ResizeImage(image)))
                     {

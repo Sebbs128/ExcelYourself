@@ -1,11 +1,11 @@
 ﻿using ClosedXML.Excel;
-using System.Drawing;
-using System.Threading.Tasks;
+
+using SkiaSharp;
 
 namespace ExcelYourself.Core
 {
     public interface IImageToExcelConverter
     {
-        XLWorkbook Convert(Bitmap bitmap);
+        XLWorkbook Convert(SKBitmap bitmap);
     }
 }
