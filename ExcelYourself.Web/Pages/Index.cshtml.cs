@@ -1,4 +1,5 @@
-﻿using ClosedXML.Extensions;
+﻿using ClosedXML.Excel;
+using ClosedXML.Extensions;
 
 using ExcelYourself.Core;
 using ExcelYourself.Web.Models;
@@ -42,7 +43,7 @@ namespace ExcelYourself.Web.Pages
 
         }
 
-        public async Task<IActionResult> OnPostUploadAsync()
+        public IActionResult OnPostUpload()
         {
             if (!ModelState.IsValid)
             {
@@ -69,51 +70,32 @@ namespace ExcelYourself.Web.Pages
 
             try
             {
-                using (var memoryStream = new MemoryStream())
-                {
-                    await FileUpload.FormFile.CopyToAsync(memoryStream);
-                    using var image = SKBitmap.Decode(memoryStream);
+                //using var memoryStream = new MemoryStream();
+                //await FileUpload.FormFile.CopyToAsync(memoryStream);
+                //memoryStream.Seek(0, SeekOrigin.Begin);
+                var image = SKBitmap.Decode(FileUpload.FormFile.OpenReadStream());
 
-                    using (var workbook = _converter.Convert(ResizeImage(image)))
-                    {
-                        return workbook.Deliver($"{Path.GetFileNameWithoutExtension(FileUpload.FormFile.FileName)}.xlsx");
-                    }
-                }
+                using XLWorkbook workbook = _converter.Convert(ResizeImage(image));
+                return workbook.Deliver($"{Path.ChangeExtension(FileUpload.FormFile.FileName, "xlsx")}");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "{ErrorName} error encountered while converting image.", ex.GetType().Name);
-                ModelState.AddModelError(FileUpload.FormFile.Name, $"Oops, something unexpected happened and I couldn't convert you image.");
+                ModelState.AddModelError(FileUpload.FormFile.Name, $"Oops, something unexpected happened and I couldn't convert your image.");
                 return Page();
             }
         }
 
-        private Bitmap ResizeImage(Image source)
+        private SKBitmap ResizeImage(SKBitmap source)
         {
             // 421 x (568 / 3) = 421 x 189
             float scale = Math.Min((float)_options.Value.DesiredWidth / source.Width, (float)_options.Value.DesiredHeight / source.Height);
 
-            var bitmap = new Bitmap(
+            var targetImageInfo = new SKImageInfo(
                 (int)Math.Min(_options.Value.DesiredWidth, scale * source.Width),
                 (int)Math.Min(_options.Value.DesiredHeight, scale * source.Height));
-            bitmap.SetResolution(source.HorizontalResolution, source.VerticalResolution);
 
-            var destRect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
-
-            using (var graphic = Graphics.FromImage(bitmap))
-            {
-                graphic.CompositingMode = CompositingMode.SourceCopy;
-                graphic.CompositingQuality = CompositingQuality.HighQuality;
-                graphic.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                graphic.SmoothingMode = SmoothingMode.HighQuality;
-                graphic.PixelOffsetMode = PixelOffsetMode.HighQuality;
-
-                using (var wrapMode = new ImageAttributes())
-                {
-                    graphic.DrawImage(source, destRect, 0, 0, source.Width, source.Height, GraphicsUnit.Pixel, wrapMode);
-                }
-            }
-            return bitmap;
+            return source.Resize(targetImageInfo, SKFilterQuality.High);
         }
     }
 }
