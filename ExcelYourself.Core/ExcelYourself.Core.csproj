@@ -1,11 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="closedxml" Version="0.95.3" />
+    <PackageReference Include="closedxml" Version="0.102.2" />
+    <PackageReference Include="SkiaSharp" Version="2.88.7" />
   </ItemGroup>
 
 </Project>
